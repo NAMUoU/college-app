@@ -19,6 +19,27 @@ with app.app_context():
     db.create_all()
     print("✅ Таблицы успешно созданы (или уже существуют).")
 
+with app.app_context():
+    # Создаём админа при каждом запуске (если его нет)
+    admin = User.query.filter_by(email='admin@college.ru').first()
+    if not admin:
+        admin = User(
+            email='admin@college.ru',
+            role='admin',
+            is_active=True,
+            must_change_password=False
+        )
+        admin.set_password('admin123')
+        db.session.add(admin)
+        db.session.commit()
+        print("✅ Администратор создан")
+    else:
+        # Проверяем и сбрасываем пароль админа
+        if not admin.check_password('admin123'):
+            admin.set_password('admin123')
+            db.session.commit()
+            print("✅ Пароль администратора сброшен")
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
