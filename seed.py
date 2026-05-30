@@ -1,3 +1,4 @@
+import sys
 from app import app, db
 from models import User, StudentProfile, TeacherProfile, Group, Subject, Event, Grade, ActionLog
 from datetime import datetime, date, timedelta
@@ -136,4 +137,8 @@ def init_db():
             print(f"Студент{i}: student{i}@college.ru / student{i}123")
 
 if __name__ == '__main__':
-    init_db()
+    with app.app_context():
+        print("Creating database tables...")
+        db.create_all()
+        print("Database tables created/verified.")
+    app.run(debug=True)
