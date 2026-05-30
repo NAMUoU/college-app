@@ -1,15 +1,16 @@
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from pathlib import Path
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///college.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = 'dev-secret-key-change-in-production'
     
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    # Получаем абсолютный путь к папке проекта
+    basedir = Path(__file__).resolve().parent
+    
+    # Создаём папку instance (где будет лежать БД)
+    instance_path = basedir / 'instance'
+    instance_path.mkdir(exist_ok=True)
+    
+    # Правильный путь к SQLite базе данных
+    SQLALCHEMY_DATABASE_URI = f'sqlite:///{instance_path}/college.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
