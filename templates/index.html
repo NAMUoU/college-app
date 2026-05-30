@@ -20,7 +20,7 @@
     <div class="card">
         <h3>Мероприятия</h3>
         <p>Участвуйте в мероприятиях колледжа и развивайтесь.</p>
-        <a href="{{ url_for('student_events') if current_user.is_authenticated and current_user.role == 'student' else '#' }}" class="btn btn-primary btn-sm">Посмотреть мероприятия</a>
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">Посмотреть мероприятия</a>
     </div>
     
     <div class="card">
@@ -32,13 +32,13 @@
     <div class="card">
         <h3>Оценки за семестр</h3>
         <p>Отслеживайте свою успеваемость.</p>
-        <a href="{{ url_for('student_grades') if current_user.is_authenticated and current_user.role == 'student' else '#' }}" class="btn btn-primary btn-sm">Посмотреть оценки</a>
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">Посмотреть оценки</a>
     </div>
     
     <div class="card">
         <h3>Получение справок</h3>
         <p>Закажите справку об обучении онлайн.</p>
-        <a href="{{ url_for('student_certificates') if current_user.is_authenticated and current_user.role == 'student' else '#' }}" class="btn btn-primary btn-sm">Заказать справку</a>
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">Заказать справку</a>
     </div>
     
     <div class="card">
