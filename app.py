@@ -924,5 +924,15 @@ def delete_student(student_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        print("✅ Database tables created/verified")
+
+        if StudentProfile.query.count() == 0:
+            print("📦 База данных пуста. Заполняем тестовыми данными...")
+            # Здесь можно добавить минимальные тестовые данные
+            # Или импортировать из seed.py
+            try:
+                from seed import init_db
+                init_db()
+            except:
+                print("⚠️ Не удалось заполнить тестовые данные")
+                
     app.run(debug=True)
