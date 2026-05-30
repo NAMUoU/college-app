@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Панель преподавателя{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Панель преподавателя</h2>
+    <p>Добро пожаловать, {{ current_user.teacher_profile.full_name }}!</p>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h3>Быстрые действия</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="{{ url_for('teacher_journal') }}" class="btn btn-primary">Работа с журналом</a>
+            <a href="{{ url_for('profile') }}" class="btn btn-secondary">Редактировать профиль</a>
+            <a href="{{ url_for('download_schedule') }}" class="btn btn-secondary">Скачать расписание</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

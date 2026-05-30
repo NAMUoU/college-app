@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="card">
+        <h2>Добро пожаловать в ЯККОТиП!</h2>
+        <p>Красноярский колледж отраслевых технологий и предпринимательства - место, где начинается ваша успешная карьера.</p>
+    </div>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h3>Новости колледжа</h3>
+        <p>Актуальные новости и события нашего колледжа.</p>
+        <a href="#" class="btn btn-primary btn-sm">Читать новости</a>
+    </div>
+    
+    <div class="card">
+        <h3>Мероприятия</h3>
+        <p>Участвуйте в мероприятиях колледжа и развивайтесь.</p>
+        <a href="{{ url_for('student_events') if current_user.is_authenticated and current_user.role == 'student' else '#' }}" class="btn btn-primary btn-sm">Посмотреть мероприятия</a>
+    </div>
+    
+    <div class="card">
+        <h3>Расписание</h3>
+        <p>Скачайте расписание занятий на семестр.</p>
+        <a href="{{ url_for('download_schedule') }}" class="btn btn-primary btn-sm">Скачать расписание</a>
+    </div>
+    
+    <div class="card">
+        <h3>Оценки за семестр</h3>
+        <p>Отслеживайте свою успеваемость.</p>
+        <a href="{{ url_for('student_grades') if current_user.is_authenticated and current_user.role == 'student' else '#' }}" class="btn btn-primary btn-sm">Посмотреть оценки</a>
+    </div>
+    
+    <div class="card">
+        <h3>Получение справок</h3>
+        <p>Закажите справку об обучении онлайн.</p>
+        <a href="{{ url_for('student_certificates') if current_user.is_authenticated and current_user.role == 'student' else '#' }}" class="btn btn-primary btn-sm">Заказать справку</a>
+    </div>
+    
+    <div class="card">
+        <h3>Сайт колледжа</h3>
+        <p>Перейти на официальный сайт колледжа.</p>
+        <a href="#" class="btn btn-primary btn-sm">Перейти</a>
+    </div>
+</div>
+
+{% if events %}
+<div class="card">
+    <h3>Ближайшие мероприятия</h3>
+    <div class="grid">
+        {% for event in events %}
+        <div class="card event-card">
+            <div class="event-date">{{ event.event_date.strftime('%d.%m.%Y') }} в {{ event.event_time }}</div>
+            <h4>{{ event.title }}</h4>
+            <p><strong>Место:</strong> {{ event.place }}</p>
+            <p>{{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

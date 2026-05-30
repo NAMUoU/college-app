@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Управление студентами{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Список студентов</h2>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ФИО</th>
+                    <th>Email</th>
+                    <th>Группа</th>
+                    <th>Телефон</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.id }}</td>
+                    <td>{{ student.full_name }}</td>
+                    <td>{{ student.user.email }}</td>
+                    <td>{{ student.group.name if student.group else 'Не назначена' }}</td>
+                    <td>{{ student.phone }}</td>
+                    <td>
+                        {% if student.status == 'approved' %}
+                            <span style="color: green;">Подтвержден</span>
+                        {% elif student.status == 'pending' %}
+                            <span style="color: orange;">На рассмотрении</span>
+                        {% elif student.status == 'rejected' %}
+                            <span style="color: red;">Отклонен</span>
+                        {% elif student.status == 'blocked' %}
+                            <span style="color: red;">Заблокирован</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if student.status != 'blocked' %}
+                            <a href="{{ url_for('toggle_student_block', student_id=student.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Заблокировать студента?');">Заблокировать</a>
+                        {% else %}
+                            <a href="{{ url_for('toggle_student_block', student_id=student.id) }}" class="btn btn-success btn-sm" onclick="return confirm('Разблокировать студента?');">Разблокировать</a>
+                        {% endif %}
+                            <a href="{{ url_for('delete_student', student_id=student.id) }}" class="btn btn-danger btn-sm" style="background-color: #dc3545; margin-top: 5px;" onclick="return confirm('ВНИМАНИЕ! Вы уверены, что хотите полностью удалить студента? Это действие необратимо!');">🗑 Удалить насовсем</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

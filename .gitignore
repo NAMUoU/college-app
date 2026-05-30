@@ -1,0 +1,43 @@
+# Python
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# База данных
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Логи
+*.log
+
+# Файлы Excel (экспорты)
+*.xlsx
+!static/files/schedule.xlsx
+
+# Кэш
+*.cache
+*.bak
+
+# Секреты
+.env
+config.py
+
+# Системные файлы
+.DS_Store
+Thumbs.db

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Аналитические отчеты{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="card">
+        <h3>Общая статистика</h3>
+        <div class="stat-card">
+            <div class="stat-number">{{ active_students }}</div>
+            <div class="stat-label">Активных студентов</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ teachers_count }}</div>
+            <div class="stat-label">Преподавателей</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ events_count }}</div>
+            <div class="stat-label">Мероприятий</div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>Популярные мероприятия</h3>
+        {% if events_popularity %}
+            <div style="margin-top: 1rem;">
+                {% for event in events_popularity %}
+                    <div style="margin-bottom: 1rem;">
+                        <strong>{{ event.name }}</strong>
+                        <div style="margin-top: 0.25rem;">
+                            <div style="background: #f0f0f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background: #F5A800; width: {{ (event.count / events_popularity[0].count) * 100 if events_popularity[0].count > 0 else 0 }}%; height: 8px;"></div>
+                            </div>
+                            <small>{{ event.count }} участников</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Нет данных о мероприятиях</p>
+        {% endif %}
+    </div>
+    
+    <div class="card">
+        <h3>Загруженность преподавателей</h3>
+        {% if teacher_load %}
+            <div style="margin-top: 1rem;">
+                {% for teacher in teacher_load %}
+                    <div style="margin-bottom: 1rem;">
+                        <strong>{{ teacher.name }}</strong>
+                        <div style="margin-top: 0.25rem;">
+                            <div style="background: #f0f0f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background: #F5A800; width: {{ (teacher.subjects / 10) * 100 if teacher.subjects <= 10 else 100 }}%; height: 8px;"></div>
+                            </div>
+                            <small>{{ teacher.subjects }} дисциплин</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Нет данных о преподавателях</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <h3>Рекомендации</h3>
+    <ul>
+        <li>✅ Система работает стабильно</li>
+        <li>📊 Активных студентов: {{ active_students }}</li>
+        <li>🎓 Всего преподавателей: {{ teachers_count }}</li>
+        <li>📅 Проведено мероприятий: {{ events_count }}</li>
+    </ul>
+</div>
+{% endblock %}

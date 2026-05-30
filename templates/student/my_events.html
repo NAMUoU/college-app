@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Мои мероприятия{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Мои мероприятия</h2>
+        <a href="{{ url_for('student_events') }}" class="btn btn-secondary btn-sm">Все мероприятия</a>
+    </div>
+    
+    {% if registrations %}
+        <div class="grid">
+            {% for reg in registrations %}
+                <div class="card">
+                    <div class="event-date">
+                        <strong>{{ reg.event.event_date.strftime('%d.%m.%Y') }}</strong> в {{ reg.event.event_time }}
+                    </div>
+                    <h3>{{ reg.event.title }}</h3>
+                    <p><strong>Место:</strong> {{ reg.event.place }}</p>
+                    <p>{{ reg.event.description }}</p>
+                    <p><small>Записан: {{ reg.created_at.strftime('%d.%m.%Y %H:%M') }}</small></p>
+                    
+                    <a href="{{ url_for('cancel_event', registration_id=reg.id) }}" class="btn btn-danger btn-sm" style="width: 100%; margin-top: 1rem;" onclick="return confirm('Вы уверены, что хотите отменить запись?');">Отменить запись</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">Вы еще не записаны ни на одно мероприятие</p>
+    {% endif %}
+</div>
+{% endblock %}

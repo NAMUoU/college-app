@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Управление мероприятиями{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Мероприятия</h2>
+        <a href="{{ url_for('add_event') }}" class="btn btn-primary">Добавить мероприятие</a>
+    </div>
+    
+    {% if events %}
+        <div class="grid">
+            {% for event in events %}
+                <div class="card">
+                    <div class="event-date">
+                        <strong>{{ event.event_date.strftime('%d.%m.%Y') }}</strong> в {{ event.event_time }}
+                    </div>
+                    <h3>{{ event.title }}</h3>
+                    <p><strong>Место:</strong> {{ event.place }}</p>
+                    <p>{{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}</p>
+                    <p><strong>Записалось:</strong> {{ event.registrations.count() }} человек</p>
+                    
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <a href="{{ url_for('event_participants', event_id=event.id) }}" class="btn btn-secondary btn-sm">Список участников</a>
+                        <a href="{{ url_for('delete_event', event_id=event.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Удалить мероприятие?');">Удалить</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">Нет мероприятий</p>
+    {% endif %}
+</div>
+{% endblock %}

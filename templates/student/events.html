@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Мероприятия{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Мероприятия колледжа</h2>
+    </div>
+    
+    <div class="grid">
+        {% for event in events %}
+            <div class="card event-card">
+                <div class="event-date">
+                    <strong>{{ event.event_date.strftime('%d.%m.%Y') }}</strong> в {{ event.event_time }}
+                </div>
+                <h3>{{ event.title }}</h3>
+                <p><strong>Место:</strong> {{ event.place }}</p>
+                <p>{{ event.description }}</p>
+                
+                {% if event.id in registered_events %}
+                    <button class="btn btn-secondary" disabled style="width: 100%;">✓ Вы записаны</button>
+                {% else %}
+                    <a href="{{ url_for('register_event', event_id=event.id) }}" class="btn btn-primary" style="width: 100%;">Записаться</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div style="margin-top: 1rem; text-align: center;">
+        <a href="{{ url_for('student_my_events') }}" class="btn btn-secondary">Мои мероприятия</a>
+    </div>
+</div>
+{% endblock %}

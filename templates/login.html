@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 0 auto;">
+    <div class="card-header">
+        <h2>Вход в систему</h2>
+    </div>
+    
+    <form method="POST" action="{{ url_for('login') }}">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="email">Email</label>
+            {{ form.email(class="form-control", id="email", placeholder="example@college.ru") }}
+            {% for error in form.email.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Пароль</label>
+            {{ form.password(class="form-control", id="password", placeholder="••••••") }}
+            {% for error in form.password.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="{{ url_for('forgot_password') }}">Забыли пароль?</a>
+            <br>
+            <a href="{{ url_for('register') }}" style="margin-top: 0.5rem; display: inline-block;">Нет аккаунта? Зарегистрироваться</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

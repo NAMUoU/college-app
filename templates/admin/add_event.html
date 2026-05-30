@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить мероприятие{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header">
+        <h2>Добавление мероприятия</h2>
+    </div>
+    
+    <form method="POST" action="{{ url_for('add_event') }}">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="title">Название мероприятия</label>
+            {{ form.title(class="form-control", id="title") }}
+            {% for error in form.title.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="event_date">Дата</label>
+            {{ form.event_date(class="form-control", id="event_date", type="date") }}
+            {% for error in form.event_date.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="event_time">Время</label>
+            {{ form.event_time(class="form-control", id="event_time", placeholder="10:00") }}
+            {% for error in form.event_time.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="place">Место проведения</label>
+            {{ form.place(class="form-control", id="place") }}
+            {% for error in form.place.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Описание</label>
+            {{ form.description(class="form-control", id="description", rows="5") }}
+            {% for error in form.description.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить мероприятие</button>
+    </form>
+</div>
+{% endblock %}

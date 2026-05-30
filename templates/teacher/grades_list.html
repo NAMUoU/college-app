@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Все оценки{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Все выставленные оценки</h2>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Студент</th>
+                    <th>Дисциплина</th>
+                    <th>Оценка</th>
+                    <th>Дата</th>
+                    <th>Комментарий</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for grade in current_user.teacher_profile.grades %}
+                <tr>
+                    <td>{{ grade.student.full_name }}</td>
+                    <td>{{ grade.subject.name }}</td>
+                    <td><span class="grade grade-{{ grade.grade_value }}">{{ grade.grade_value }}</span></td>
+                    <td>{{ grade.grade_date.strftime('%d.%m.%Y') }}</td>
+                    <td>{{ grade.comment if grade.comment else '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

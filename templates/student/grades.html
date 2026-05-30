@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Мои оценки{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Мои оценки</h2>
+    </div>
+    
+    {% if subjects_grades %}
+        {% for subject_id, data in subjects_grades.items() %}
+            <div class="card" style="margin-top: 1rem;">
+                <h3>{{ data.subject }}</h3>
+                <p><strong>Средний балл:</strong> {{ "%.2f"|format(data.average) }}</p>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Оценка</th>
+                                <th>Преподаватель</th>
+                                <th>Комментарий</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in data.grades %}
+                                <tr>
+                                    <td>{{ grade.grade_date.strftime('%d.%m.%Y') }}</td>
+                                    <td><span class="grade grade-{{ grade.grade_value }}">{{ grade.grade_value }}</span></td>
+                                    <td>{{ grade.teacher.full_name }}</td>
+                                    <td>{{ grade.comment if grade.comment else '-' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">У вас пока нет оценок</p>
+    {% endif %}
+    
+    <div style="margin-top: 1rem; text-align: center;">
+        <a href="{{ url_for('download_schedule') }}" class="btn btn-primary">Скачать расписание</a>
+    </div>
+</div>
+{% endblock %}

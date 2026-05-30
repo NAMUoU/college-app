@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Заявки на регистрацию{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Заявки на регистрацию студентов</h2>
+    </div>
+    
+    {% if pending_students %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ФИО</th>
+                        <th>Email</th>
+                        <th>Группа</th>
+                        <th>Телефон</th>
+                        <th>Дата регистрации</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in pending_students %}
+                    <tr>
+                        <td>{{ student.id }}</td>
+                        <td>{{ student.full_name }}</td>
+                        <td>{{ student.user.email }}</td>
+                        <td>{{ student.group.name if student.group else 'Не указана' }}</td>
+                        <td>{{ student.phone }}</td>
+                        <td>{{ student.user.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        <td>
+                            <a href="{{ url_for('approve_student', student_id=student.id) }}" class="btn btn-success btn-sm">Подтвердить</a>
+                            <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Отклонить заявку?');">Отклонить</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">Нет заявок на рассмотрении</p>
+    {% endif %}
+</div>
+{% endblock %}

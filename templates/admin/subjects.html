@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Управление дисциплинами{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Дисциплины</h2>
+        <a href="{{ url_for('add_subject') }}" class="btn btn-primary">Добавить дисциплину</a>
+    </div>
+    
+    {% if subjects %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название дисциплины</th>
+                        <th>Преподаватель</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.id }}</td>
+                        <td>{{ subject.name }}</td>
+                        <td>{{ subject.teacher.full_name if subject.teacher else 'Не назначен' }}</td>
+                        <td>
+                            <a href="{{ url_for('delete_subject', subject_id=subject.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Удалить дисциплину?');">Удалить</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">Нет дисциплин</p>
+    {% endif %}
+</div>
+{% endblock %}

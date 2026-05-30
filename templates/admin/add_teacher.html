@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить преподавателя{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header">
+        <h2>Добавление преподавателя</h2>
+    </div>
+    
+    <form method="POST" action="{{ url_for('add_teacher') }}">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="full_name">ФИО</label>
+            {{ form.full_name(class="form-control", id="full_name") }}
+            {% for error in form.full_name.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email</label>
+            {{ form.email(class="form-control", id="email") }}
+            {% for error in form.email.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Пароль</label>
+            {{ form.password(class="form-control", id="password") }}
+            {% for error in form.password.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="confirm_password">Подтвердите пароль</label>
+            {{ form.confirm_password(class="form-control", id="confirm_password") }}
+            {% for error in form.confirm_password.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="subjects">Дисциплины</label>
+            <select name="subjects" multiple class="form-control" size="5">
+                {% for subject in form.subjects.choices %}
+                    <option value="{{ subject[0] }}">{{ subject[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить преподавателя</button>
+    </form>
+</div>
+{% endblock %}

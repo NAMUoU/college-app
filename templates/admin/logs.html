@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Логи действий{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Логи действий пользователей</h2>
+    </div>
+    
+    {% if logs %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Пользователь</th>
+                        <th>Email</th>
+                        <th>Действие</th>
+                        <th>Дата и время</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.id }}</td>
+                        <td>
+                            {% if log.user.role == 'student' %}
+                                {{ log.user.student_profile.full_name if log.user.student_profile else log.user.email }}
+                            {% elif log.user.role == 'teacher' %}
+                                {{ log.user.teacher_profile.full_name if log.user.teacher_profile else log.user.email }}
+                            {% else %}
+                                {{ log.user.email }}
+                            {% endif %}
+                        </td>
+                        <td>{{ log.user.email }}</td>
+                        <td>{{ log.action }}</td>
+                        <td>{{ log.created_at.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">Нет записей в логах</p>
+    {% endif %}
+</div>
+{% endblock %}

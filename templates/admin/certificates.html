@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Заявки на справки{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Заявки на справки об обучении</h2>
+    </div>
+    
+    {% if requests %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Студент</th>
+                        <th>Группа</th>
+                        <th>Дата заказа</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td>{{ req.id }}</td>
+                        <td>{{ req.student.full_name }}</td>
+                        <td>{{ req.student.group.name if req.student.group else 'Не указана' }}</td>
+                        <td>{{ req.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('update_certificate', request_id=req.id) }}" style="display: inline;">
+                                <select name="status" onchange="this.form.submit()">
+                                    <option value="pending" {% if req.status == 'pending' %}selected{% endif %}>В обработке</option>
+                                    <option value="ready" {% if req.status == 'ready' %}selected{% endif %}>Готова</option>
+                                    <option value="issued" {% if req.status == 'issued' %}selected{% endif %}>Выдана</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            {% if req.status == 'ready' %}
+                                <span style="color: green;">✓ Готова к выдаче</span>
+                            {% elif req.status == 'issued' %}
+                                <span style="color: blue;">✓ Выдана</span>
+                            {% else %}
+                                <span style="color: orange;">⏳ В обработке</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">Нет заявок на справки</p>
+    {% endif %}
+</div>
+{% endblock %}

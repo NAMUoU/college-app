@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Участники мероприятия{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Участники мероприятия: {{ event.title }}</h2>
+        <div>
+            <a href="{{ url_for('event_participants', event_id=event.id, export='excel') }}" class="btn btn-primary">Экспорт в Excel</a>
+            <a href="{{ url_for('admin_events') }}" class="btn btn-secondary">Назад</a>
+        </div>
+    </div>
+    
+    <div class="event-details" style="margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 16px;">
+        <p><strong>Дата:</strong> {{ event.event_date.strftime('%d.%m.%Y') }} в {{ event.event_time }}</p>
+        <p><strong>Место:</strong> {{ event.place }}</p>
+        <p><strong>Описание:</strong> {{ event.description }}</p>
+        <p><strong>Всего участников:</strong> {{ registrations|length }}</p>
+    </div>
+    
+    {% if registrations %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>ФИО студента</th>
+                        <th>Группа</th>
+                        <th>Телефон</th>
+                        <th>Email</th>
+                        <th>Дата записи</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reg in registrations %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ reg.student.full_name }}</td>
+                        <td>{{ reg.student.group.name if reg.student.group else 'Не указана' }}</td>
+                        <td>{{ reg.student.phone }}</td>
+                        <td>{{ reg.student.user.email }}</td>
+                        <td>{{ reg.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">Нет записавшихся на мероприятие</p>
+    {% endif %}
+</div>
+{% endblock %}

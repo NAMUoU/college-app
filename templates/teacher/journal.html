@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Электронный журнал{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Электронный журнал</h2>
+    </div>
+    
+    <form method="POST" action="{{ url_for('teacher_journal') }}" id="journalForm">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="group_id">Выберите группу</label>
+            {{ form.group_id(class="form-control", id="group_id") }}
+        </div>
+        
+        <div class="form-group">
+            <label for="subject_id">Выберите дисциплину</label>
+            {{ form.subject_id(class="form-control", id="subject_id") }}
+        </div>
+        
+        <div class="form-group">
+            <label for="lesson_date">Дата занятия</label>
+            {{ form.lesson_date(class="form-control", id="lesson_date", type="date") }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Выбрать</button>
+    </form>
+</div>
+
+{% if students %}
+<div class="card">
+    <h3>Журнал группы {{ selected_group.name }} - {{ selected_subject.name }}</h3>
+    <p>Дата: {{ selected_date.strftime('%d.%m.%Y') }}</p>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>ФИО студента</th>
+                    <th>Посещаемость</th>
+                    <th>Оценка</th>
+                    <th>Комментарий</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    {% set attendance = attendances.get(student.id) %}
+                    {% set grade = grades_for_date.get(student.id) %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ student.full_name }}</td>
+                        <td>
+                            <select class="attendance-select" data-student-id="{{ student.id }}" data-subject-id="{{ selected_subject.id }}" data-lesson-date="{{ selected_date.strftime('%Y-%m-%d') }}">
+                                <option value="present" {% if attendance and attendance.status == 'present' %}selected{% endif %}>Присутствует</option>
+                                <option value="absent" {% if not attendance or attendance.status == 'absent' %}selected{% endif %}>Отсутствует</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="grade-select" data-student-id="{{ student.id }}" data-subject-id="{{ selected_subject.id }}" data-lesson-date="{{ selected_date.strftime('%Y-%m-%d') }}">
+                                <option value="">Нет оценки</option>
+                                <option value="2" {% if grade and grade.grade_value == 2 %}selected{% endif %}>2</option>
+                                <option value="3" {% if grade and grade.grade_value == 3 %}selected{% endif %}>3</option>
+                                <option value="4" {% if grade and grade.grade_value == 4 %}selected{% endif %}>4</option>
+                                <option value="5" {% if grade and grade.grade_value == 5 %}selected{% endif %}>5</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="comment-input" data-student-id="{{ student.id }}" value="{{ grade.comment if grade else '' }}" placeholder="Комментарий">
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-sm save-grade-btn" data-student-id="{{ student.id }}">Сохранить</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="margin-top: 1rem; text-align: center;">
+        <a href="{{ url_for('export_journal', group_id=selected_group.id, subject_id=selected_subject.id) }}" class="btn btn-primary">Экспорт в Excel</a>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.save-grade-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const studentId = this.dataset.studentId;
+        const subjectId = document.querySelector(`.grade-select[data-student-id="${studentId}"]`).dataset.subjectId;
+        const lessonDate = document.querySelector(`.grade-select[data-student-id="${studentId}"]`).dataset.lessonDate;
+        const gradeValue = document.querySelector(`.grade-select[data-student-id="${studentId}"]`).value;
+        const comment = document.querySelector(`.comment-input[data-student-id="${studentId}"]`).value;
+        const attendanceStatus = document.querySelector(`.attendance-select[data-student-id="${studentId}"]`).value;
+        
+        if (gradeValue) {
+            const gradeResponse = await fetch('/teacher/save_grade', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams({
+                    student_id: studentId,
+                    subject_id: subjectId,
+                    lesson_date: lessonDate,
+                    grade_value: gradeValue,
+                    comment: comment
+                })
+            });
+            
+            if (gradeResponse.ok) {
+                alert('Оценка сохранена');
+            }
+        }
+        
+        const attendanceResponse = await fetch('/teacher/save_attendance', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({
+                student_id: studentId,
+                subject_id: subjectId,
+                lesson_date: lessonDate,
+                status: attendanceStatus
+            })
+        });
+        
+        if (attendanceResponse.ok && !gradeValue) {
+            alert('Посещаемость сохранена');
+        }
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

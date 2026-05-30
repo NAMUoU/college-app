@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЯККОТиП - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Логотип колледжа">
+                <!-- <h1>ЯККОТиП</h1> -->
+            </div>
+            <nav class="nav">
+                <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Главная</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">Личный кабинет</a>
+                    {% if current_user.role == 'student' %}
+                        <a href="{{ url_for('student_events') }}" class="{% if request.endpoint == 'student_events' %}active{% endif %}">Мероприятия</a>
+                        <a href="{{ url_for('student_grades') }}" class="{% if request.endpoint == 'student_grades' %}active{% endif %}">Оценки</a>
+                        <a href="{{ url_for('student_certificates') }}" class="{% if request.endpoint == 'student_certificates' %}active{% endif %}">Справки</a>
+                        <a href="{{ url_for('student_notifications') }}" class="{% if request.endpoint == 'student_notifications' %}active{% endif %}">
+                            Уведомления
+                            {% if unread_count > 0 %}
+                                <span class="notification-count">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                    {% elif current_user.role == 'teacher' %}
+                        <a href="{{ url_for('teacher_journal') }}" class="{% if request.endpoint == 'teacher_journal' %}active{% endif %}">Журнал</a>
+                        <a href="{{ url_for('teacher_export') }}" class="{% if request.endpoint == 'teacher_export' %}active{% endif %}">Экспорт</a>
+                    {% elif current_user.role == 'admin' %}
+                        <a href="{{ url_for('admin_students') }}">Студенты</a>
+                        <a href="{{ url_for('admin_teachers') }}">Преподаватели</a>
+                        <a href="{{ url_for('admin_events') }}">Мероприятия</a>
+                        <a href="{{ url_for('admin_reports') }}">Отчеты</a>
+                    {% endif %}
+                    <div class="user-menu">
+                        <span>{{ current_user.email }}</span>
+                        <a href="{{ url_for('profile') }}" class="btn-logout" style="text-decoration: none;">Профиль</a>
+                        <a href="{{ url_for('logout') }}" class="btn-logout" style="text-decoration: none;">Выйти</a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Вход</a>
+                    <a href="{{ url_for('register') }}">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>© КГАПОУ "Красноярский колледж отраслевых технологий и предпринимательства". Красноярск, 2026</p>
+    </footer>
+</body>
+</html>

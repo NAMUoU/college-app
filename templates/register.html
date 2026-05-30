@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация студента{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Регистрация студента</h2>
+        <p>Заполните форму для подачи заявки на регистрацию</p>
+    </div>
+    
+    <form method="POST" action="{{ url_for('register') }}">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="full_name">ФИО</label>
+            {{ form.full_name(class="form-control", id="full_name", placeholder="Иванов Иван Иванович") }}
+            {% for error in form.full_name.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email</label>
+            {{ form.email(class="form-control", id="email", placeholder="student@college.ru") }}
+            {% for error in form.email.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="phone">Телефон</label>
+            {{ form.phone(class="form-control", id="phone", placeholder="+7(999)123-45-67") }}
+            {% for error in form.phone.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="group_id">Группа</label>
+            {{ form.group_id(class="form-control", id="group_id") }}
+            {% for error in form.group_id.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Пароль</label>
+            {{ form.password(class="form-control", id="password", placeholder="Минимум 6 символов") }}
+            {% for error in form.password.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label for="confirm_password">Подтвердите пароль</label>
+            {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Повторите пароль") }}
+            {% for error in form.confirm_password.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="{{ url_for('login') }}">Уже есть аккаунт? Войти</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

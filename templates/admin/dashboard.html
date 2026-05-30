@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Панель администратора{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Панель администратора</h2>
+    <p>Управление системой колледжа</p>
+</div>
+
+<div class="grid">
+    <div class="stat-card card">
+        <div class="stat-number">{{ students_count }}</div>
+        <div class="stat-label">Всего студентов</div>
+    </div>
+    <div class="stat-card card">
+        <div class="stat-number">{{ teachers_count }}</div>
+        <div class="stat-label">Преподавателей</div>
+    </div>
+    <div class="stat-card card">
+        <div class="stat-number">{{ events_count }}</div>
+        <div class="stat-label">Мероприятий</div>
+    </div>
+    <div class="stat-card card">
+        <div class="stat-number">{{ pending_requests }}</div>
+        <div class="stat-label">Заявок на рассмотрении</div>
+    </div>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h3>Управление пользователями</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="{{ url_for('admin_student_requests') }}" class="btn btn-primary">Заявки на регистрацию</a>
+            <a href="{{ url_for('admin_students') }}" class="btn btn-primary">Все студенты</a>
+            <a href="{{ url_for('admin_teachers') }}" class="btn btn-primary">Преподаватели</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>Управление данными</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="{{ url_for('admin_groups') }}" class="btn btn-primary">Учебные группы</a>
+            <a href="{{ url_for('admin_subjects') }}" class="btn btn-primary">Дисциплины</a>
+            <a href="{{ url_for('admin_events') }}" class="btn btn-primary">Мероприятия</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>Отчеты и логи</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="{{ url_for('admin_certificates') }}" class="btn btn-primary">Заявки на справки</a>
+            <a href="{{ url_for('admin_logs') }}" class="btn btn-primary">Логи действий</a>
+            <a href="{{ url_for('admin_reports') }}" class="btn btn-primary">Аналитические отчет

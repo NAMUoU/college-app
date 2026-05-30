@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Экспорт данных{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Экспорт данных</h2>
+    </div>
+    
+    <div class="grid">
+        <div class="card">
+            <h3>Экспорт журнала успеваемости</h3>
+            <p>Выберите группу и дисциплину для экспорта журнала в Excel</p>
+            <form method="GET" action="{{ url_for('export_journal') }}">
+                <div class="form-group">
+                    <label for="group_id">Группа</label>
+                    <select name="group_id" id="group_id" class="form-control" required>
+                        <option value="">Выберите группу</option>
+                        {% for group in groups %}
+                            <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject_id">Дисциплина</label>
+                    <select name="subject_id" id="subject_id" class="form-control" required>
+                        <option value="">Выберите дисциплину</option>
+                        {% for subject in current_user.teacher_profile.subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Экспортировать</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h3>Скачать расписание</h3>
+            <p>Скачайте общее расписание занятий в формате Excel</p>
+            <a href="{{ url_for('download_schedule') }}" class="btn btn-primary">Скачать расписание</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

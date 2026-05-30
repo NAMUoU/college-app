@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Справки{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Заказ справок об обучении</h2>
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <a href="{{ url_for('request_certificate') }}" class="btn btn-primary">Заказать новую справку</a>
+    </div>
+    
+    <h3>История заявок</h3>
+    
+    {% if requests %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Дата заказа</th>
+                        <th>Статус</th>
+                        <th>Дата обновления</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                        <tr>
+                            <td>{{ req.id }}</td>
+                            <td>{{ req.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td>
+                                {% if req.status == 'pending' %}
+                                    <span style="color: orange;">В обработке</span>
+                                {% elif req.status == 'ready' %}
+                                    <span style="color: green;">Готова</span>
+                                {% elif req.status == 'issued' %}
+                                    <span style="color: blue;">Выдана</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ req.updated_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">У вас нет заявок на справки</p>
+    {% endif %}
+</div>
+{% endblock %}

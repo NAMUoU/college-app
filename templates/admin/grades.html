@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Просмотр оценок студентов{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Просмотр оценок студентов</h2>
+    </div>
+    
+    <form method="GET" action="{{ url_for('admin_grades') }}" style="margin-bottom: 2rem;">
+        <div class="grid">
+            <div class="form-group">
+                <label for="group_id">Группа</label>
+                <select name="group_id" id="group_id" class="form-control">
+                    <option value="">Все группы</option>
+                    {% for group in groups %}
+                        <option value="{{ group.id }}" {% if selected_group_id == group.id %}selected{% endif %}>{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="subject_id">Дисциплина</label>
+                <select name="subject_id" id="subject_id" class="form-control">
+                    <option value="">Все дисциплины</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.id }}" {% if selected_subject_id == subject.id %}selected{% endif %}>{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="start_date">Дата с</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="end_date">Дата по</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Применить фильтры</button>
+    </form>
+    
+    {% if grades %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Студент</th>
+                        <th>Группа</th>
+                        <th>Дисциплина</th>
+                        <th>Оценка</th>
+                        <th>Дата</th>
+                        <th>Преподаватель</th>
+                        <th>Комментарий</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for grade in grades %}
+                    <tr>
+                        <td>{{ grade.student.full_name }}</td>
+                        <td>{{ grade.student.group.name if grade.student.group else 'Не указана' }}</td>
+                        <td>{{ grade.subject.name }}</td>
+                        <td><span class="grade grade-{{ grade.grade_value }}">{{ grade.grade_value }}</span></td>
+                        <td>{{ grade.grade_date.strftime('%d.%m.%Y') }}</td>
+                        <td>{{ grade.teacher.full_name }}</td>
+                        <td>{{ grade.comment if grade.comment else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">Нет оценок по выбранным фильтрам</p>
+    {% endif %}
+</div>
+{% endblock %}

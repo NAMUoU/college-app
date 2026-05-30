@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить группу{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 0 auto;">
+    <div class="card-header">
+        <h2>Добавление учебной группы</h2>
+    </div>
+    
+    <form method="POST" action="{{ url_for('add_group') }}">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="name">Название группы</label>
+            {{ form.name(class="form-control", id="name", placeholder="Пример: П-20-1") }}
+            {% for error in form.name.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить группу</button>
+    </form>
+</div>
+{% endblock %}

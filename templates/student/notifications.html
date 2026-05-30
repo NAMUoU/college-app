@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Уведомления{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Уведомления</h2>
+    </div>
+    
+    {% if notifications %}
+        <div class="notifications-list">
+            {% for notif in notifications %}
+                <div class="card" style="border-left: 4px solid {% if not notif.is_read %}#F5A800{% else %}#ddd{% endif %};">
+                    <h3>{{ notif.title }}</h3>
+                    <p>{{ notif.message }}</p>
+                    <small style="color: #999;">{{ notif.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                    {% if not notif.is_read %}
+                        <span style="float: right; color: #F5A800;">Новое</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="text-align: center; padding: 2rem;">У вас нет уведомлений</p>
+    {% endif %}
+</div>
+{% endblock %}
