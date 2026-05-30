@@ -13,6 +13,13 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
+
+# === СОЗДАНИЕ ТАБЛИЦ (обязательно до первого запроса) ===
+with app.app_context():
+    db.create_all()
+    print("✅ Таблицы базы данных созданы/проверены")
+# ====================================================
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
