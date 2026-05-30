@@ -14,11 +14,10 @@ app.config.from_object(Config)
 
 db.init_app(app)
 
-# === СОЗДАНИЕ ТАБЛИЦ (обязательно до первого запроса) ===
 with app.app_context():
+    print("🔄 Проверка и создание таблиц базы данных...")
     db.create_all()
-    print("✅ Таблицы базы данных созданы/проверены")
-# ====================================================
+    print("✅ Таблицы успешно созданы (или уже существуют).")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -39,6 +38,11 @@ def utility_processor():
 
 @app.route('/')
 def index():
+    from sqlalchemy import inspect
+    inspector = inspect(db.engine)
+    if not inspector.has_table('events'):
+        print("⚠️ Таблица 'events' не найдена! Пробуем создать...")
+        db.create_all()
     events = Event.query.order_by(Event.event_date).limit(4).all()
     return render_template('index.html', events=events)
 
