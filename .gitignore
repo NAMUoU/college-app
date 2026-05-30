@@ -36,7 +36,6 @@ build/
 
 # Секреты
 .env
-config.py
 
 # Системные файлы
 .DS_Store
