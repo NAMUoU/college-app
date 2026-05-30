@@ -16,13 +16,14 @@
     
     {% if requests %}
         <div class="table-container">
-            <table>
+            </table>
                 <thead>
                     <tr>
                         <th>№</th>
                         <th>Дата заказа</th>
                         <th>Статус</th>
                         <th>Дата обновления</th>
+                        <th>Дополнительно</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,18 +33,36 @@
                             <td>{{ req.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
                             <td>
                                 {% if req.status == 'pending' %}
-                                    <span style="color: orange;">В обработке</span>
+                                    <span style="color: orange;">⏳ В обработке</span>
                                 {% elif req.status == 'ready' %}
-                                    <span style="color: green;">Готова</span>
+                                    <span style="color: green;">✅ Готова</span>
                                 {% elif req.status == 'issued' %}
-                                    <span style="color: blue;">Выдана</span>
+                                    <span style="color: blue;">📋 Выдана</span>
                                 {% endif %}
                             </td>
                             <td>{{ req.updated_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td>
+                                {% if req.status == 'ready' %}
+                                    <span style="color: #F5A800; font-size: 0.9rem;">
+                                        ℹ️ Справку можно забрать в учебное время в комнате мастеров
+                                    </span>
+                                {% elif req.status == 'issued' %}
+                                    <span style="color: green;">✓ Справка получена</span>
+                                {% else %}
+                                    <span style="color: #999;">—</span>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        
+        <div style="margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 16px; border-left: 4px solid #F5A800;">
+            <p style="margin: 0; font-size: 0.9rem;">
+                <strong>ℹ️ Информация:</strong> Готовые справки выдаются в <strong>комнате мастеров</strong> 
+                в учебное время (пн-пт, 9:00-17:00). При себе необходимо иметь студенческий билет.
+            </p>
         </div>
     {% else %}
         <p style="text-align: center; padding: 2rem;">У вас нет заявок на справки</p>
