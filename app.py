@@ -932,6 +932,25 @@ def delete_student(student_id):
     
     return redirect(url_for('admin_students'))
 
+@app.route('/create-admin-now')
+def create_admin_now():
+    with app.app_context():
+        # Удаляем всех админов
+        User.query.filter_by(role='admin').delete()
+        
+        # Создаём нового
+        admin = User(
+            email='admin@college.ru',
+            role='admin',
+            is_active=True,
+            must_change_password=False
+        )
+        admin.set_password('admin123')
+        db.session.add(admin)
+        db.session.commit()
+        
+        return "✅ Админ создан! Войдите с admin@college.ru / admin123"
+
 if __name__ == '__main__':
     # Создаём таблицы ТОЛЬКО если база данных пуста или нет таблиц
     with app.app_context():
