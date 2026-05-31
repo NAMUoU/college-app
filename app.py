@@ -472,7 +472,7 @@ def save_grade():
         if student and student.user:
             subject = Subject.query.get(subject_id)
             create_notification(student.user_id, 'Новая оценка', 
-                              f'По предмету "{subject.name if subject else 'предмет'}" выставлена оценка {grade_value}')
+                                f'По предмету "{subject.name if subject else 'предмет'}" выставлена оценка {grade_value}')
     
     db.session.commit()
     log_action(f'Выставление оценки студенту ID {student_id}')
