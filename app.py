@@ -954,15 +954,7 @@ def delete_student(student_id):
     return redirect(url_for('admin_students'))
 
 if __name__ == '__main__':
-    # Создаём таблицы ТОЛЬКО если база данных пуста или нет таблиц
     with app.app_context():
-        from sqlalchemy import inspect
-        inspector = inspect(db.engine)
-        if not inspector.has_table('users'):
-            print("📦 Создание таблиц базы данных...")
-            db.create_all()
-            print("✅ Таблицы созданы")
-        else:
-            print("✅ Таблицы уже существуют")
-    
+        db.create_all()
+        print("✅ Таблицы созданы/проверены")
     app.run(debug=True)
