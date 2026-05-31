@@ -43,15 +43,6 @@
             {% endfor %}
         </div>
         
-        <div class="form-group">
-            <label for="subjects">Дисциплины</label>
-            <select name="subjects" multiple class="form-control" size="5">
-                {% for subject in form.subjects.choices %}
-                    <option value="{{ subject[0] }}">{{ subject[1] }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        
         <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить преподавателя</button>
     </form>
 </div>
