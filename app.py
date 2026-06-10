@@ -192,8 +192,12 @@ def dashboard():
         events_count = Event.query.count()
         pending_requests = StudentProfile.query.filter_by(status='pending').count()
         
-        return render_template('dashboard.html', students_count=students_count, 
-                             teachers_count=teachers_count, events_count=events_count, pending_requests=pending_requests)
+        # ВАЖНО: используем admin/dashboard.html, а не обычный dashboard.html
+        return render_template('admin/dashboard.html', 
+                             students_count=students_count, 
+                             teachers_count=teachers_count, 
+                             events_count=events_count, 
+                             pending_requests=pending_requests)
     
     return render_template('dashboard.html')
 

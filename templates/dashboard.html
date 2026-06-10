@@ -196,6 +196,33 @@
                 <a href="{{ url_for('admin_reports') }}" class="btn btn-primary">Аналитические отчеты</a>
             </div>
         </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Управление пользователями</h3>
+                <!-- ... -->
+            </div>
+            
+            <div class="card">
+                <h3>Управление данными</h3>
+                <!-- ... -->
+            </div>
+            
+            <div class="card">
+                <h3>Отчеты и логи</h3>
+                <!-- ... -->
+            </div>
+        </div>
+
+        <!-- ДОБАВЬТЕ ЭТОТ БЛОК ПОСЛЕ ЗАКРЫВАЮЩЕГО </div> ВЫШЕ -->
+        <div class="grid">
+            <div class="card">
+                <h3>Управление файлами</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="{{ url_for('manage_schedule') }}" class="btn btn-primary">Управление расписанием</a>
+                </div>
+            </div>
+        </div>
     </div>
 {% endif %}
 {% endblock %}
