@@ -2,6 +2,13 @@
 
 {% block title %}Панель администратора{% endblock %}
 
+<!-- ВРЕМЕННО: отладка -->
+<div style="background: lightblue; padding: 10px; margin-bottom: 20px;">
+    <strong>DEBUG:</strong> 
+    Роль пользователя: {{ current_user.role }} |
+    URL manage_schedule: {{ url_for('manage_schedule') }}
+</div>
+
 {% block content %}
 <div class="card">
     <h2>Панель администратора</h2>
