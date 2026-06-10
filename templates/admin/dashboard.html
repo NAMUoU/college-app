@@ -55,10 +55,13 @@
         </div>
     </div>
 
+    <!-- ВОТ ЭТОТ БЛОК ДОЛЖЕН БЫТЬ ДОБАВЛЕН -->
     <div class="card">
         <h3>Управление файлами</h3>
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-            <a href="{{ url_for('upload_schedule') }}" class="btn btn-primary">Загрузить расписание</a>
+            <a href="{{ url_for('manage_schedule') }}" class="btn btn-primary">Управление расписанием</a>
         </div>
     </div>
+    <!-- КОНЕЦ БЛОКА -->
 </div>
+{% endblock %}
