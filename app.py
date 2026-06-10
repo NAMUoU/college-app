@@ -1034,6 +1034,33 @@ def upload_schedule():
     
     return render_template('admin/upload_schedule.html')
 
+# ВРЕМЕННЫЙ КОД — добавляем колонку image_filename
+with app.app_context():
+    import sqlalchemy as sa
+    inspector = sa.inspect(db.engine)
+    
+    # Проверяем, есть ли колонка image_filename в таблице events
+    columns = [col['name'] for col in inspector.get_columns('events')]
+    
+    if 'image_filename' not in columns:
+        print("🔧 Добавляем колонку image_filename...")
+        db.session.execute('ALTER TABLE events ADD COLUMN image_filename VARCHAR(200) DEFAULT "event_default.jpg"')
+        db.session.commit()
+        print("✅ Колонка image_filename добавлена")
+    else:
+        print("✅ Колонка image_filename уже существует")
+    
+    # Проверяем колонку certificate_type в таблице certificate_requests
+    columns_cert = [col['name'] for col in inspector.get_columns('certificate_requests')]
+    
+    if 'certificate_type' not in columns_cert:
+        print("🔧 Добавляем колонку certificate_type...")
+        db.session.execute('ALTER TABLE certificate_requests ADD COLUMN certificate_type VARCHAR(50) DEFAULT "study"')
+        db.session.commit()
+        print("✅ Колонка certificate_type добавлена")
+    else:
+        print("✅ Колонка certificate_type уже существует")
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
