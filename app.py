@@ -14,10 +14,29 @@ app.config.from_object(Config)
 
 db.init_app(app)
 
+import sqlalchemy as sa
+
 with app.app_context():
-    print("🔄 Проверка и создание таблиц базы данных...")
     db.create_all()
-    print("✅ Таблицы успешно созданы (или уже существуют).")
+    inspector = sa.inspect(db.engine)
+
+    # Добавляем колонку image_filename в таблицу events, если её нет
+    if 'image_filename' not in [col['name'] for col in inspector.get_columns('events')]:
+        print("🔧 Добавляем колонку image_filename в таблицу events...")
+        db.session.execute('ALTER TABLE events ADD COLUMN image_filename VARCHAR(200) DEFAULT "event_default.jpg"')
+        db.session.commit()
+        print("✅ Колонка image_filename добавлена.")
+    else:
+        print("✅ Колонка image_filename уже существует.")
+
+    # Добавляем колонку certificate_type в таблицу certificate_requests, если её нет
+    if 'certificate_type' not in [col['name'] for col in inspector.get_columns('certificate_requests')]:
+        print("🔧 Добавляем колонку certificate_type в таблицу certificate_requests...")
+        db.session.execute('ALTER TABLE certificate_requests ADD COLUMN certificate_type VARCHAR(50) DEFAULT "study"')
+        db.session.commit()
+        print("✅ Колонка certificate_type добавлена.")
+    else:
+        print("✅ Колонка certificate_type уже существует.")
 
 with app.app_context():
     # Создаём админа при каждом запуске (если его нет)
