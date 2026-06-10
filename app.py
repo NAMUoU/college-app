@@ -18,34 +18,7 @@ import sqlalchemy as sa
 
 with app.app_context():
     db.create_all()
-    inspector = sa.inspect(db.engine)
-
-    # --- Добавляем колонку image_filename в таблицу events ---
-    if 'image_filename' not in [col['name'] for col in inspector.get_columns('events')]:
-        print("🔧 Добавляем колонку image_filename в таблицу events...")
-        # 1. Создаём колонку, НО без DEFAULT
-        db.session.execute(sa.text('ALTER TABLE events ADD COLUMN image_filename VARCHAR(200)'))
-        # 2. Делаем все существующие записи (если они есть) равными 'event_default.jpg'
-        db.session.execute(sa.text("UPDATE events SET image_filename = 'event_default.jpg' WHERE image_filename IS NULL"))
-        # 3. Теперь, когда данные обновлены, устанавливаем DEFAULT
-        db.session.execute(sa.text("ALTER TABLE events ALTER COLUMN image_filename SET DEFAULT 'event_default.jpg'"))
-        db.session.commit()
-        print("✅ Колонка image_filename добавлена.")
-    else:
-        print("✅ Колонка image_filename уже существует.")
-
-    # --- Добавляем колонку certificate_type в таблицу certificate_requests ---
-    if 'certificate_type' not in [col['name'] for col in inspector.get_columns('certificate_requests')]:
-        print("🔧 Добавляем колонку certificate_type в таблицу certificate_requests...")
-        # Те же самые шаги, но для другой таблицы
-        db.session.execute(sa.text('ALTER TABLE certificate_requests ADD COLUMN certificate_type VARCHAR(50)'))
-        db.session.execute(sa.text("UPDATE certificate_requests SET certificate_type = 'study' WHERE certificate_type IS NULL"))
-        db.session.execute(sa.text("ALTER TABLE certificate_requests ALTER COLUMN certificate_type SET DEFAULT 'study'"))
-        db.session.commit()
-        print("✅ Колонка certificate_type добавлена.")
-    else:
-        print("✅ Колонка certificate_type уже существует.")
-
+    
 with app.app_context():
     # Создаём админа при каждом запуске (если его нет)
     admin = User.query.filter_by(email='admin@college.ru').first()
