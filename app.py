@@ -1005,34 +1005,35 @@ def delete_student(student_id):
     
     return redirect(url_for('admin_students'))
 
-@app.route('/admin/upload_schedule', methods=['GET', 'POST'])
+@app.route('/admin/upload_schedule', methods=['POST'])
 @login_required
 @role_required('admin')
 def upload_schedule():
-    if request.method == 'POST':
-        if 'schedule_file' not in request.files:
-            flash('Файл не выбран', 'danger')
-            return redirect(request.url)
-        
-        file = request.files['schedule_file']
-        
-        if file.filename == '':
-            flash('Файл не выбран', 'danger')
-            return redirect(request.url)
-        
-        if file and (file.filename.endswith('.xlsx') or file.filename.endswith('.xls')):
-            # Сохраняем файл
-            file_path = os.path.join(app.static_folder, 'files', 'schedule.xlsx')
-            os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            file.save(file_path)
-            
-            log_action(f'Загрузка нового расписания: {file.filename}')
-            flash('Расписание успешно обновлено!', 'success')
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Пожалуйста, загрузите файл Excel (.xlsx или .xls)', 'danger')
+    import os
+    from werkzeug.utils import secure_filename
     
-    return render_template('admin/upload_schedule.html')
+    if 'schedule_file' not in request.files:
+        flash('Файл не выбран', 'danger')
+        return redirect(url_for('manage_schedule'))
+    
+    file = request.files['schedule_file']
+    
+    if file.filename == '':
+        flash('Файл не выбран', 'danger')
+        return redirect(url_for('manage_schedule'))
+    
+    if file and (file.filename.endswith('.xlsx') or file.filename.endswith('.xls')):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.static_folder, 'files', 'schedule.xlsx')
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        file.save(file_path)
+        
+        log_action(f'Загрузка нового расписания: {filename}')
+        flash('Расписание успешно загружено!', 'success')
+    else:
+        flash('Пожалуйста, загрузите файл Excel (.xlsx или .xls)', 'danger')
+    
+    return redirect(url_for('manage_schedule'))
 
 # ВРЕМЕННЫЙ КОД — добавляем колонку image_filename
 with app.app_context():
