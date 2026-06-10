@@ -16,10 +16,11 @@
     
     {% if requests %}
         <div class="table-container">
-            </table>
+            <table>
                 <thead>
                     <tr>
                         <th>№</th>
+                        <th>Тип справки</th>
                         <th>Дата заказа</th>
                         <th>Статус</th>
                         <th>Дата обновления</th>
@@ -28,31 +29,42 @@
                 </thead>
                 <tbody>
                     {% for req in requests %}
-                        <tr>
-                            <td>{{ req.id }}</td>
-                            <td>{{ req.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
-                            <td>
-                                {% if req.status == 'pending' %}
-                                    <span style="color: orange;">⏳ В обработке</span>
-                                {% elif req.status == 'ready' %}
-                                    <span style="color: green;">✅ Готова</span>
-                                {% elif req.status == 'issued' %}
-                                    <span style="color: blue;">📋 Выдана</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ req.updated_at.strftime('%d.%m.%Y %H:%M') }}</td>
-                            <td>
-                                {% if req.status == 'ready' %}
-                                    <span style="color: #F5A800; font-size: 0.9rem;">
-                                        ℹ️ Справку можно забрать в учебное время в комнате мастеров
-                                    </span>
-                                {% elif req.status == 'issued' %}
-                                    <span style="color: green;">✓ Справка получена</span>
-                                {% else %}
-                                    <span style="color: #999;">—</span>
-                                {% endif %}
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>{{ req.id }}</td>
+                        <td>
+                            {% if req.certificate_type == 'study' %}
+                                Об обучении
+                            {% elif req.certificate_type == 'payment' %}
+                                Об оплате обучения
+                            {% elif req.certificate_type == 'military' %}
+                                Для военкомата (Приложение №4)
+                            {% else %}
+                                {{ req.certificate_type }}
+                            {% endif %}
+                        </td>
+                        <td>{{ req.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        <td>
+                            {% if req.status == 'pending' %}
+                                <span style="color: orange;">⏳ В обработке</span>
+                            {% elif req.status == 'ready' %}
+                                <span style="color: green;">✅ Готова</span>
+                            {% elif req.status == 'issued' %}
+                                <span style="color: blue;">📋 Выдана</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ req.updated_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        <td>
+                            {% if req.status == 'ready' %}
+                                <span style="color: #F5A800; font-size: 0.9rem;">
+                                    ℹ️ Справку можно забрать в учебное время в комнате мастеров
+                                </span>
+                            {% elif req.status == 'issued' %}
+                                <span style="color: green;">✓ Справка получена</span>
+                            {% else %}
+                                <span style="color: #999;">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>

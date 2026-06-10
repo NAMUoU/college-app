@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Управление расписанием{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="card">
+        <div class="card-header">
+            <h2>📤 Загрузить новое расписание</h2>
+        </div>
+        
+        <form method="POST" action="{{ url_for('upload_schedule') }}" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="form-group">
+                <label for="schedule_file">Выберите файл Excel с расписанием</label>
+                <input type="file" name="schedule_file" id="schedule_file" class="form-control" accept=".xlsx,.xls" required>
+                <small class="form-text text-muted">Поддерживаются файлы .xlsx и .xls</small>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Загрузить расписание</button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2>🗑 Удалить расписание</h2>
+        </div>
+        
+        <p>Текущее расписание будет удалено. Студенты и преподаватели не смогут его скачать до загрузки нового.</p>
+        
+        <form method="POST" action="{{ url_for('delete_schedule') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Вы уверены, что хотите удалить расписание?');">Удалить расписание</button>
+        </form>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2>📋 Текущее расписание</h2>
+        </div>
+        
+        {% if schedule_exists %}
+            <p style="color: green;">✅ Файл расписания загружен</p>
+            <p><strong>Размер:</strong> {{ schedule_size }} КБ</p>
+            <p><strong>Последнее изменение:</strong> {{ schedule_modified }}</p>
+        {% else %}
+            <p style="color: orange;">⚠️ Расписание не загружено</p>
+            <p>Загрузите файл расписания, чтобы студенты и преподаватели могли его скачать.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <h3>📌 Как должно выглядеть расписание?</h3>
+    <p>Файл должен быть в формате Excel (.xlsx или .xls). Рекомендуемая структура:</p>
+    <ul>
+        <li><strong>Первый лист</strong> — основное расписание</li>
+        <li><strong>Заголовки</strong> — время, понедельник, вторник и т.д.</li>
+        <li>Можно добавить несколько листов для разных групп</li>
+    </ul>
+</div>
+{% endblock %}

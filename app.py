@@ -18,7 +18,7 @@ import sqlalchemy as sa
 
 with app.app_context():
     db.create_all()
-    
+
 with app.app_context():
     # Создаём админа при каждом запуске (если его нет)
     admin = User.query.filter_by(email='admin@college.ru').first()
@@ -1060,6 +1060,44 @@ with app.app_context():
         print("✅ Колонка certificate_type добавлена")
     else:
         print("✅ Колонка certificate_type уже существует")
+
+@app.route('/admin/manage_schedule', methods=['GET'])
+@login_required
+@role_required('admin')
+def manage_schedule():
+    import os
+    from datetime import datetime
+    
+    schedule_path = os.path.join(app.static_folder, 'files', 'schedule.xlsx')
+    schedule_exists = os.path.exists(schedule_path)
+    schedule_size = None
+    schedule_modified = None
+    
+    if schedule_exists:
+        schedule_size = round(os.path.getsize(schedule_path) / 1024, 1)
+        modified_timestamp = os.path.getmtime(schedule_path)
+        schedule_modified = datetime.fromtimestamp(modified_timestamp).strftime('%d.%m.%Y %H:%M')
+    
+    return render_template('admin/manage_schedule.html', 
+                         schedule_exists=schedule_exists,
+                         schedule_size=schedule_size,
+                         schedule_modified=schedule_modified)
+
+@app.route('/admin/delete_schedule', methods=['POST'])
+@login_required
+@role_required('admin')
+def delete_schedule():
+    import os
+    schedule_path = os.path.join(app.static_folder, 'files', 'schedule.xlsx')
+    
+    if os.path.exists(schedule_path):
+        os.remove(schedule_path)
+        log_action('Удаление файла расписания')
+        flash('Расписание успешно удалено', 'success')
+    else:
+        flash('Файл расписания не найден', 'warning')
+    
+    return redirect(url_for('manage_schedule'))
 
 if __name__ == '__main__':
     with app.app_context():
