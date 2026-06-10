@@ -321,18 +321,34 @@ def student_certificates():
     requests = CertificateRequest.query.filter_by(student_id=student.id).order_by(CertificateRequest.created_at.desc()).all()
     return render_template('student/certificates.html', requests=requests)
 
-@app.route('/student/request_certificate')
+@app.route('/student/request_certificate', methods=['GET', 'POST'])
 @login_required
 @role_required('student')
 def request_certificate():
     student = current_user.student_profile
-    request = CertificateRequest(student_id=student.id, status='pending')  # ← Ошибка здесь
-    db.session.add(request)
-    db.session.commit()
-    log_action('Заказ справки об обучении')
-    create_notification(current_user.id, 'Заказ справки', 'Ваша заявка на справку отправлена в обработку')
-    flash('Заявка на справку успешно отправлена', 'success')
-    return redirect(url_for('student_certificates'))
+    form = CertificateRequestForm()
+    
+    if form.validate_on_submit():
+        cert_request = CertificateRequest(
+            student_id=student.id, 
+            status='pending',
+            certificate_type=form.certificate_type.data
+        )
+        db.session.add(cert_request)
+        db.session.commit()
+        log_action(f'Заказ справки типа {form.certificate_type.data}')
+        
+        type_names = {
+            'study': 'об обучении',
+            'payment': 'об оплате обучения',
+            'military': 'для военкомата'
+        }
+        create_notification(current_user.id, 'Заказ справки', 
+                          f'Ваша заявка на справку {type_names.get(form.certificate_type.data, "")} отправлена в обработку')
+        flash('Заявка на справку успешно отправлена', 'success')
+        return redirect(url_for('student_certificates'))
+    
+    return render_template('student/request_certificate.html', form=form)
 
 @app.route('/student/grades')
 @login_required
@@ -492,37 +508,53 @@ def export_journal():
     
     group = Group.query.get(group_id)
     subject = Subject.query.get(subject_id)
+    
+    if not group or not subject:
+        flash('Группа или дисциплина не найдены', 'danger')
+        return redirect(url_for('teacher_journal'))
+    
     students = StudentProfile.query.filter_by(group_id=group_id, status='approved').all()
+    
+    if not students:
+        flash('В группе нет студентов', 'warning')
+        return redirect(url_for('teacher_journal'))
     
     wb = Workbook()
     ws = wb.active
-    ws.title = f"Журнал {group.name} {subject.name}"
+    ws.title = f"Журнал_{group.name}"
     
-    ws['A1'] = f"Журнал успеваемости группы {group.name} по дисциплине {subject.name}"
-    ws['A2'] = f"Преподаватель: {teacher.full_name}"
-    ws['A3'] = "Дата генерации: " + datetime.now().strftime("%d.%m.%Y %H:%M")
+    # Заголовки
+    ws['A1'] = f"Журнал успеваемости группы {group.name}"
+    ws['A2'] = f"Дисциплина: {subject.name}"
+    ws['A3'] = f"Преподаватель: {teacher.full_name}"
+    ws['A4'] = "Дата генерации: " + datetime.now().strftime("%d.%m.%Y %H:%M")
     
-    headers = ['№', 'ФИО студента']
+    # Получаем все даты, по которым есть оценки
     all_dates = set()
-    
     for student in students:
         grades = Grade.query.filter_by(student_id=student.id, subject_id=subject_id).all()
         for grade in grades:
             all_dates.add(grade.grade_date)
     
     sorted_dates = sorted(all_dates)
+    
+    # Заголовки таблицы
+    headers = ['№', 'ФИО студента']
     for d in sorted_dates:
         headers.append(d.strftime("%d.%m.%Y"))
     headers.append('Средний балл')
     
     for col, header in enumerate(headers, 1):
-        ws.cell(row=5, column=col, value=header)
+        ws.cell(row=6, column=col, value=header)
     
-    for row, student in enumerate(students, start=6):
-        ws.cell(row=row, column=1, value=row-5)
+    # Заполняем данные
+    for row, student in enumerate(students, start=7):
+        ws.cell(row=row, column=1, value=row-6)
         ws.cell(row=row, column=2, value=student.full_name)
         
-        grades_dict = {g.grade_date: g.grade_value for g in Grade.query.filter_by(student_id=student.id, subject_id=subject_id).all()}
+        grades_dict = {g.grade_date: g.grade_value for g in Grade.query.filter_by(
+            student_id=student.id, subject_id=subject_id
+        ).all()}
         
         total = 0
         count = 0
@@ -537,10 +569,15 @@ def export_journal():
         average = total / count if count > 0 else 0
         ws.cell(row=row, column=len(headers), value=round(average, 2))
     
+    # Сохраняем и отправляем
     file_path = os.path.join(app.static_folder, f'journal_{group.id}_{subject.id}.xlsx')
     wb.save(file_path)
     
-    return send_file(file_path, as_attachment=True, download_name=f'journal_{group.name}_{subject.name}.xlsx')
+    return send_file(
+        file_path, 
+        as_attachment=True, 
+        download_name=f'journal_{group.name}_{subject.name}.xlsx'
+    )
 
 @app.route('/teacher/grades')
 @login_required
@@ -736,24 +773,39 @@ def admin_events():
     events = Event.query.all()
     return render_template('admin/events.html', events=events)
 
+from werkzeug.utils import secure_filename
+
 @app.route('/admin/add_event', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
 def add_event():
     form = EventForm()
     if form.validate_on_submit():
+        # Обработка изображения
+        image_filename = 'event_default.jpg'
+        if form.image.data:
+            file = form.image.data
+            filename = secure_filename(file.filename)
+            # Генерируем уникальное имя
+            image_filename = f"event_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{filename}"
+            file_path = os.path.join(app.static_folder, 'images', 'events', image_filename)
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            file.save(file_path)
+        
         event = Event(
             title=form.title.data,
             event_date=form.event_date.data,
             event_time=form.event_time.data,
             place=form.place.data,
-            description=form.description.data
+            description=form.description.data,
+            image_filename=image_filename
         )
         db.session.add(event)
         db.session.commit()
         log_action(f'Создание мероприятия {form.title.data}')
         flash('Мероприятие успешно добавлено', 'success')
         return redirect(url_for('admin_events'))
+    
     return render_template('admin/add_event.html', form=form)
 
 @app.route('/admin/delete_event/<int:event_id>')
@@ -952,6 +1004,35 @@ def delete_student(student_id):
         print(f'Error deleting student: {e}')
     
     return redirect(url_for('admin_students'))
+
+@app.route('/admin/upload_schedule', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def upload_schedule():
+    if request.method == 'POST':
+        if 'schedule_file' not in request.files:
+            flash('Файл не выбран', 'danger')
+            return redirect(request.url)
+        
+        file = request.files['schedule_file']
+        
+        if file.filename == '':
+            flash('Файл не выбран', 'danger')
+            return redirect(request.url)
+        
+        if file and (file.filename.endswith('.xlsx') or file.filename.endswith('.xls')):
+            # Сохраняем файл
+            file_path = os.path.join(app.static_folder, 'files', 'schedule.xlsx')
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            file.save(file_path)
+            
+            log_action(f'Загрузка нового расписания: {file.filename}')
+            flash('Расписание успешно обновлено!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Пожалуйста, загрузите файл Excel (.xlsx или .xls)', 'danger')
+    
+    return render_template('admin/upload_schedule.html')
 
 if __name__ == '__main__':
     with app.app_context():

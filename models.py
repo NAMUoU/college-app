@@ -79,6 +79,7 @@ class Event(db.Model):
     event_time = db.Column(db.String(10), nullable=False)
     place = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
+    image_filename = db.Column(db.String(200), default='event_default.jpg')  # новое поле
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     registrations = db.relationship('EventRegistration', backref='event', lazy='dynamic', cascade='all, delete-orphan')
@@ -96,6 +97,7 @@ class CertificateRequest(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('student_profiles.id'), nullable=False)
+    certificate_type = db.Column(db.String(50), default='study')  # 'study', 'payment', 'military'
     status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

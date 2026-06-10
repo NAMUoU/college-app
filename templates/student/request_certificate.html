@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Заказ справки{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-header">
+        <h2>Заказ справки</h2>
+    </div>
+    
+    <form method="POST" action="{{ url_for('request_certificate') }}">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="certificate_type">Тип справки</label>
+            {{ form.certificate_type(class="form-control", id="certificate_type") }}
+            {% for error in form.certificate_type.errors %}
+                <small style="color: red;">{{ error }}</small>
+            {% endfor %}
+        </div>
+        
+        <div class="alert alert-info">
+            <strong>ℹ️ Информация:</strong>
+            <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+                <li><strong>Справка об обучении</strong> — подтверждение факта обучения в колледже</li>
+                <li><strong>Справка об оплате обучения</strong> — для подтверждения оплаты (налоговый вычет и т.д.)</li>
+                <li><strong>Справка для военкомата</strong> — по форме Приложения №4</li>
+            </ul>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Заказать справку</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

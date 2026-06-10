@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed  # ← добавить эту строку
 from wtforms import StringField, PasswordField, SelectField, TextAreaField, DateField, IntegerField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from datetime import date
@@ -36,6 +37,7 @@ class EventForm(FlaskForm):
     event_time = StringField('Время', validators=[DataRequired(), Length(max=10)])
     place = StringField('Место', validators=[DataRequired(), Length(max=200)])
     description = TextAreaField('Описание')
+    image = FileField('Изображение мероприятия', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Только изображения!')])
 
 class JournalSelectForm(FlaskForm):
     group_id = SelectField('Группа', coerce=int, validators=[DataRequired()])
@@ -54,3 +56,10 @@ class TeacherForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Пароль', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Подтвердите пароль', validators=[DataRequired(), EqualTo('password')])
+
+class CertificateRequestForm(FlaskForm):
+    certificate_type = SelectField('Тип справки', choices=[
+        ('study', 'Справка об обучении'),
+        ('payment', 'Справка об оплате обучения'),
+        ('military', 'Справка по форме Приложения №4 (для военкомата)')
+    ], validators=[DataRequired()])
