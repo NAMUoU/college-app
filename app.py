@@ -1071,7 +1071,10 @@ def delete_schedule():
     else:
         flash('Файл расписания не найден', 'warning')
     
-    return redirect(url_for('manage_schedule'))
+@app.route('/check-role')
+@login_required
+def check_role():
+    return f"Your role: {current_user.role}"
 
 # ВРЕМЕННЫЙ КОД — добавляем колонку image_filename
 with app.app_context():
