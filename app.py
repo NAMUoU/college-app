@@ -524,8 +524,18 @@ def export_journal():
         return redirect(url_for('teacher_journal'))
     
     wb = Workbook()
+    
+    # Очищаем название листа от недопустимых символов
+    sheet_name = f"Журнал_{group.name}"
+    invalid_chars = ['/', '\\', '?', '*', '[', ']', ':']
+    for char in invalid_chars:
+        sheet_name = sheet_name.replace(char, '_')
+    
+    # Ограничиваем длину названия (31 символ максимум)
+    sheet_name = sheet_name[:31]
+    
     ws = wb.active
-    ws.title = f"Журнал_{group.name}"
+    ws.title = sheet_name
     
     # Заголовки
     ws['A1'] = f"Журнал успеваемости группы {group.name}"
@@ -574,13 +584,18 @@ def export_journal():
         ws.cell(row=row, column=len(headers), value=round(average, 2))
     
     # Сохраняем и отправляем
-    file_path = os.path.join(app.static_folder, f'journal_{group.id}_{subject.id}.xlsx')
+    filename = f"journal_{group.name}_{subject.name}.xlsx"
+    # Очищаем имя файла от недопустимых символов
+    for char in invalid_chars:
+        filename = filename.replace(char, '_')
+    
+    file_path = os.path.join(app.static_folder, filename)
     wb.save(file_path)
     
     return send_file(
         file_path, 
         as_attachment=True, 
-        download_name=f'journal_{group.name}_{subject.name}.xlsx'
+        download_name=filename
     )
 
 @app.route('/teacher/grades')
@@ -1074,6 +1089,8 @@ def delete_schedule():
         flash('Расписание успешно удалено', 'success')
     else:
         flash('Файл расписания не найден', 'warning')
+    
+    return redirect(url_for('manage_schedule'))
     
 @app.route('/check-role')
 @login_required
