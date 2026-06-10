@@ -23,7 +23,8 @@ with app.app_context():
     # Добавляем колонку image_filename в таблицу events, если её нет
     if 'image_filename' not in [col['name'] for col in inspector.get_columns('events')]:
         print("🔧 Добавляем колонку image_filename в таблицу events...")
-        db.session.execute('ALTER TABLE events ADD COLUMN image_filename VARCHAR(200) DEFAULT "event_default.jpg"')
+        # Исправление: добавили sa.text() вокруг SQL-запроса
+        db.session.execute(sa.text('ALTER TABLE events ADD COLUMN image_filename VARCHAR(200) DEFAULT "event_default.jpg"'))
         db.session.commit()
         print("✅ Колонка image_filename добавлена.")
     else:
@@ -32,7 +33,8 @@ with app.app_context():
     # Добавляем колонку certificate_type в таблицу certificate_requests, если её нет
     if 'certificate_type' not in [col['name'] for col in inspector.get_columns('certificate_requests')]:
         print("🔧 Добавляем колонку certificate_type в таблицу certificate_requests...")
-        db.session.execute('ALTER TABLE certificate_requests ADD COLUMN certificate_type VARCHAR(50) DEFAULT "study"')
+        # Исправление: добавили sa.text() вокруг SQL-запроса
+        db.session.execute(sa.text('ALTER TABLE certificate_requests ADD COLUMN certificate_type VARCHAR(50) DEFAULT "study"'))
         db.session.commit()
         print("✅ Колонка certificate_type добавлена.")
     else:
