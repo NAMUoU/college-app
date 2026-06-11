@@ -802,14 +802,25 @@ def add_event():
     if form.validate_on_submit():
         # Обработка изображения
         image_filename = 'event_default.jpg'
+        
         if form.image.data:
             file = form.image.data
-            filename = secure_filename(file.filename)
-            # Генерируем уникальное имя
-            image_filename = f"event_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{filename}"
-            file_path = os.path.join(app.static_folder, 'images', 'events', image_filename)
-            os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            file.save(file_path)
+            # Проверяем, что файл не пустой
+            if file.filename != '':
+                filename = secure_filename(file.filename)
+                # Генерируем уникальное имя
+                import time
+                unique_name = f"event_{int(time.time())}_{filename}"
+                
+                # Сохраняем файл
+                events_dir = os.path.join(app.static_folder, 'images', 'events')
+                os.makedirs(events_dir, exist_ok=True)
+                
+                file_path = os.path.join(events_dir, unique_name)
+                file.save(file_path)
+                image_filename = unique_name
+                
+                print(f"✅ Файл сохранён: {file_path}")
         
         event = Event(
             title=form.title.data,
@@ -821,6 +832,7 @@ def add_event():
         )
         db.session.add(event)
         db.session.commit()
+        
         log_action(f'Создание мероприятия {form.title.data}')
         flash('Мероприятие успешно добавлено', 'success')
         return redirect(url_for('admin_events'))
